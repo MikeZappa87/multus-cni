@@ -154,7 +154,7 @@ spec:
       serviceAccountName: multus
       containers:
         - name: kube-multus
-          image: ghcr.io/k8snetworkplumbingwg/multus-cni:snapshot-thick
+          image: docker.io/dougbtv/multus-cni:kni-poc
           command: [ "/usr/src/multus-cni/bin/multus-daemon" ]
           resources:
             requests:
@@ -168,6 +168,8 @@ spec:
           volumeMounts:
             - name: cni
               mountPath: /host/etc/cni/net.d
+            - name: cni
+              mountPath: /etc/cni/net.d
             # multus-daemon expects that cnibin path must be identical between pod and container host.
             # e.g. if the cni bin is in '/opt/cni/bin' on the container host side, then it should be mount to '/opt/cni/bin' in multus-daemon,
             # not to any other directory, like '/opt/bin' or '/usr/bin'.
@@ -195,23 +197,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-      initContainers:
-        - name: install-multus-binary
-          image: ghcr.io/k8snetworkplumbingwg/multus-cni:snapshot-thick
-          command:
-            - "cp"
-            - "/usr/src/multus-cni/bin/multus-shim"
-            - "/host/opt/cni/bin/multus-shim"
-          resources:
-            requests:
-              cpu: "10m"
-              memory: "15Mi"
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - name: cnibin
-              mountPath: /host/opt/cni/bin
-              mountPropagation: Bidirectional
       terminationGracePeriodSeconds: 10
       volumes:
         - name: cni

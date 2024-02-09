@@ -38,6 +38,8 @@ import (
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v4/pkg/server/config"
 	"gopkg.in/k8snetworkplumbingwg/multus-cni.v4/pkg/types"
 
+	libkni "github.com/MikeZappa87/libkni/pkg"
+	libknicni "github.com/MikeZappa87/libkni/pkg/cni"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -71,6 +73,11 @@ func main() {
 	}
 
 	logging.Verbosef("multus-daemon started")
+
+	// Integrate libkni KNIServer initialization here
+	go func() {
+		libkni.NewDefaultKNIServer("/tmp/kni.sock", "unix", libknicni.CreateDefaultConfig())
+	}()
 
 	if multusConf.ReadinessIndicatorFile != "" {
 		// Check readinessindicator file before daemon launch

@@ -186,6 +186,12 @@ spec:
             - name: host-run-netns
               mountPath: /run/netns
               mountPropagation: HostToContainer
+            - mountPath: /tmp
+              name: kni
+            - mountPath: /net.db
+              name: varlibcni
+            - mountPath: /var/lib/cni
+              name: cni
             - name: multus-daemon-config
               mountPath: /etc/cni/net.d/multus.d
               readOnly: true
@@ -205,6 +211,18 @@ spec:
         - name: cnibin
           hostPath:
             path: /opt/cni/bin
+        - name: kni
+          hostPath:
+            path: /tmp
+            type: Directory
+        - name: db
+          hostPath:
+            path: /net.db
+            type: FileOrCreate
+        - name: varlibcni
+          hostPath:
+            path: /var/lib/cni
+            type: DirectoryOrCreate
         - name: hostroot
           hostPath:
             path: /
